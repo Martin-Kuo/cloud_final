@@ -46,7 +46,7 @@ def index():
             data[r[0]] = [r[1],r[2],r[3],r[4]] # machine_id = maintain_date, day_diff, next_maintain, email
         return render_template('index.html', session = user, data=data)
     else:
-        return render_template('index.html')
+        return render_template('login.html')
 
 # 登入
 @application.route('/login', methods=['POST', 'GET'])
