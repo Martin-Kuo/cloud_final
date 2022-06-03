@@ -6,6 +6,8 @@ import os
 import smtplib
 from email.message import EmailMessage
 
+
+#測試github
 # 本地測試資料庫
 '''
 conn = pymysql.connect(
