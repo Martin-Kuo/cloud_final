@@ -82,8 +82,8 @@ def submit():
     if request.method == 'POST':
         machine_id = request.form.get('machine_id')
         if machine_id in data: # 如果machine id重複，提醒
-            flash("Machine exists!") 
-            return render_template('index.html', session = user, data=data)
+            flash("機器已存在!") 
+            return render_template('add.html', session = user, data=data)
         maintain_date = request.form.get('maintain_date')
         interval = request.form.get('interval')
         next_maintain_date = datetime.datetime.strptime(maintain_date, "%Y-%m-%d") + datetime.timedelta(days=int(interval))
@@ -106,7 +106,7 @@ def submit():
         conn.commit()
         target = cur.fetchone()
         if target == None:
-            flash("Machine not found!") 
+            flash("找不到機器!") 
             return render_template('index.html', session = user, data=data)
         return render_template('index.html', session = user, search=target, data=data)
 
