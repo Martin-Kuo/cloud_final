@@ -18,11 +18,20 @@ conn = pymysql.connect(
 '''
 
 # 連上資料庫
+'''
 conn = pymysql.connect(
         host= 'machinedatabase.cy453mcnxqjo.us-east-1.rds.amazonaws.com', 
         port = 3306,
         user = 'admin', 
         password = 'rootroot',
+        db = 'sys'
+        )
+'''
+conn = pymysql.connect(
+        host= 'mydb.cmqgfis3u1l2.us-east-1.rds.amazonaws.com', 
+        port = 3306,
+        user = 'admin', 
+        password = '01234567',
         db = 'sys'
         )
 
