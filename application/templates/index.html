@@ -31,6 +31,13 @@
         <input type="submit" value="登出" />
     </form>
     <h1 align="center">機器系統管理頁面</h1>
+    <form action="/submit" method="get" align="center">
+        <p>請輸入機器ID: <input type="text" name="machine_id">&nbsp&nbsp<input type="submit" value="搜尋">&nbsp&nbsp<input type="submit" value="全部"></p>
+    </form>
+    <!-- show flashed message -->
+    {% for message in get_flashed_messages() %}
+    <h1 align="center">{{ message }}</h1>
+    {% endfor %}
     <table  border="2" CELLPADDING="5" align="center">
         <tr align="center">
             <td>機器ID</td>
@@ -41,62 +48,46 @@
             <td>機器刪除</td>
         </tr>
 
-        {% for k,v in data.items() %}
-        <tr align="center">
-            <td>{{k}}</td>
-            {% for cell in v %}
-                <td>{{cell}}</td>
-            {% endfor %}
-            {% if session != v[3] %}
-                <td>無權限</td>
-            {% endif %}
-            {% if session == v[3] %}
-            <td>
-                <form action="/remove" method="post">
-                    <input type="hidden" name="machine_id" value="{{k}}">
-                    <input type="submit" value="刪除">
-                </form>
-            </td>
-            {% endif %}
-        </tr>
-        {% endfor %}
-    </table>
-
-    <!--<h2>GET</h2>-->
-    <form action="/submit" method="get" align="center">
-        <h2>機器搜尋</h2>
-        <p>請輸入機器ID: <input type="text" name="machine_id"><input type="submit" value="搜尋"></p>
-    </form>
-
-    <table border="2" CELLPADDING="5" align="center">
-        <tr align="center">
-          <td>機器ID</td>
-          <td>維護日期</td>
-          <td>維護間隔</td>
-          <td>下次維護日期</td>
-          <td>維護者</td>
-        </tr>
-        
         {% if search %}
         <tr align="center">
             {% for cell in search %}
                 <td>{{cell}}</td>
             {% endfor %}
+            {% if session != search[4] %}
+                <td>無權限</td>
+            {% endif %}
             {% if session == search[4] %}
             <td>
                 <form action="/remove" method="post">
                 <input type="hidden" name="machine_id" value="{{search[0]}}">
-                    <input type="submit" value="Remove">
+                    <input type="submit" value="刪除">
                 </form>
             </td>
             {% endif %}
         </tr>
+
+        {% else %} 
+            {% for k,v in data.items() %}
+            <tr align="center">
+                <td>{{k}}</td>
+                {% for cell in v %}
+                    <td>{{cell}}</td>
+                {% endfor %}
+                {% if session != v[3] %}
+                    <td>無權限</td>
+                {% endif %}
+                {% if session == v[3] %}
+                <td>
+                    <form action="/remove" method="post">
+                        <input type="hidden" name="machine_id" value="{{k}}">
+                        <input type="submit" value="刪除">
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
         {% endif %}
     </table>
-    <!-- show flashed message -->
-    {% for message in get_flashed_messages() %}
-        <h1 align="center">{{ message }}</h1>
-    {% endfor %}
 
     <input type="button" value="新增" onclick="location.href='./add'">
     {% endif %}
