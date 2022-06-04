@@ -53,15 +53,18 @@ def login():
     account = request.form.get('account')
     password = request.form.get('password')
     target = None
-    login_sql = "SELECT account,username FROM `Member` WHERE account=(%s) AND password=(%s)"
-    cur.execute(login_sql,(account,password))
+    login_sql = "SELECT account,username,password FROM `Member` WHERE account=(%s)"
+    cur.execute(login_sql,(account))
     conn.commit()
     target = cur.fetchone()
     
     if target == None:
         flash("您尚未註冊!") 
         return render_template('login.html')
-    else:
+    elif password != target[2]:
+        flash("輸入密碼錯誤!") 
+        return render_template('login.html')
+    else:        
         session['account'] = target[0] # 記錄使用者登入session
         session['username'] = target[1]
         return redirect(url_for('index'))
