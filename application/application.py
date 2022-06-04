@@ -78,14 +78,11 @@ def index():
         username = session['username']
         account = session['account']
         rows = None
-        '''
-        sql = "SELECT * FROM Maintenance Where member_id=(%s)"
-        '''
         sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE member_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
         cur.execute(sql,(account))
         conn.commit()
         rows = cur.fetchall()
-        print(rows)
+
         data = {}
         for r in rows:
             data[r[0]] = [r[8],r[2],r[3],r[4],r[5],r[6],r[7]] # machine_id = username, start_date, end_date, last_maintain_date, next_maintain_date, state, maintain_freq, 
@@ -159,10 +156,7 @@ def insert():
     # 如果是明天要維修,寄郵件通知
     today = str(date.today())
     check = datetime.datetime.strptime(today, "%Y-%m-%d")+datetime.timedelta(days=1)
-    '''
-    if (str(check.date())) == start_date:
-        send_email(email, machine_id, start_date)
-    '''
+
     if (str(check.date())) == str(next_maintain_date.date()):
         send_email(email, machine_id, next_maintain_date.date())
     return redirect(url_for('index'))
@@ -174,15 +168,6 @@ def searching():
     account = session['account']
     rows = None
     machine_id = request.args.get('machine_id')
-    '''
-    searching_sql = "SELECT * FROM `Maintenance` WHERE machine_id=(%s)"
-    
-    searching_sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE machine_id = (%s) AND member_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
-    cur.execute(searching_sql,(machine_id,account))
-    conn.commit()
-    target = cur.fetchone()
-    '''
-
     searching_sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE machine_id = (%s) AND member_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
     cur.execute(searching_sql,(machine_id,account))
     conn.commit()
