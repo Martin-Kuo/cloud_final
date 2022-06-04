@@ -47,12 +47,32 @@ data = {}
 def start():
     return render_template('login.html')
 
-# 主頁
+# 登入
+@application.route('/login', methods=['POST', 'GET'])
+def login():
+    account = request.form.get('account')
+    password = request.form.get('password')
+    target = None
+    login_sql = "SELECT account,username FROM `Member` WHERE account=(%s) AND password=(%s)"
+    cur.execute(login_sql,(account,password))
+    conn.commit()
+    target = cur.fetchone()
+    
+    if target == None:
+        flash("您尚未註冊!") 
+        return render_template('login.html')
+    else:
+        session['account'] = target[0] # 記錄使用者登入session
+        session['username'] = target[1]
+        return redirect(url_for('index'))
+
+# 主頁面
 @application.route('/index')
 def index():
-    if 'username' in session: # 如果使用者是登入狀態
+    if 'account' in session: # 如果使用者是登入狀態
         user = session['username']
-        sql = "SELECT * FROM maintain_schedule"
+        rows = None
+        sql = "SELECT * FROM Maintenance"
         cur.execute(sql)
         conn.commit()
         rows = cur.fetchall()
@@ -60,22 +80,37 @@ def index():
             data[r[0]] = [r[1],r[2],r[3],r[4]] # machine_id = maintain_date, day_diff, next_maintain, email
         return render_template('index.html', session = user, data=data)
 
-# 註冊
+# 註冊頁面
 @application.route('/signup')
 def signup():
     return render_template('signup.html')
 
-# 登入
-@application.route('/login', methods=['POST', 'GET'])
-def login():
-    if request.method == 'POST':
-        usr = request.form.get('username')
-        session['username'] = usr # 記錄使用者登入session
-        return redirect(url_for('index'))
+# 註冊
+@application.route('/signup_act', methods=['POST', 'GET'])
+def signup_act():
+    username = request.form.get('username')
+    account = request.form.get('account')
+    password = request.form.get('password')
+    email = request.form.get('email')
+    target = None
+    repeat_sql = "SELECT account FROM `Member` WHERE account=(%s)"
+    cur.execute(repeat_sql,(account))
+    conn.commit()
+    target = cur.fetchone()
+
+    if target == None:
+        signup_sql = "INSERT INTO `Member` (`username`, `account`, `password`, `email`) VALUES (%s, %s, %s, %s)"
+        cur.execute(signup_sql,(username, account, password, email))
+        conn.commit()
+        return render_template('login.html')
+    else:
+        flash("此帳號已被註冊!") 
+        return render_template('signup.html')
 
 # 登出
 @application.route('/logout')
 def logout():
+    session.pop('account', None)
     session.pop('username', None)
     return redirect(url_for('start'))
 

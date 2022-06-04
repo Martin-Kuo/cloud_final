@@ -24,9 +24,12 @@
 </head>
 
 <body>
-    <!-- show below only if session does not exist -->
     <div class="box box_son">
         <div class="content"> 
+            <!-- show flashed message -->
+            {% for message in get_flashed_messages() %}
+            <p align="center">{{ message }}</p>
+            {% endfor %}
             <table border="2" align="center" CELLPADDING="5">
                 <tr>
                     <td colspan="2" align="center">機器管理系統</td>
@@ -34,14 +37,14 @@
                 <form action="/login" method="post">
                     <tr>
                         <td colspan="2" align="right">
-                            <label>Email:</label>
-                            <input type="text" name="username" required>
+                            <label>帳號:</label>
+                            <input type="text" name="account" required>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="2" align="right">
                             <label>密碼:</label>
-                            <input type="text" name="password">
+                            <input type="text" name="password" required>
                         </td>
                         
                     </tr>
