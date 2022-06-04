@@ -24,9 +24,9 @@
 </head>
 
 <body>
-    {% if session %}
+    {% if account %}
     <!-- show below only if session exist -->
-    <p align="right">{{session}}&nbsp您好&nbsp</p>
+    <p align="right">{{username}}&nbsp您好&nbsp</p>
     <form align="right" action="/logout">
         <input type="submit" value="登出" />
     </form>
@@ -41,10 +41,13 @@
     <table  border="2" CELLPADDING="5" align="center">
         <tr align="center">
             <td>機器ID</td>
-            <td>維護日期</td>
-            <td>維護間隔</td>
-            <td>下次維護日期</td>
             <td>維護者</td>
+            <td>建立日期</td>
+            <td>結束日期</td>
+            <td>上次維護日期</td>
+            <td>下次維護日期</td>
+            <td>機器狀態</td>
+            <td>維護頻率</td>
             <td>機器刪除</td>
         </tr>
 
@@ -53,10 +56,10 @@
             {% for cell in search %}
                 <td>{{cell}}</td>
             {% endfor %}
-            {% if session != search[4] %}
+            {% if account != search[1] %}
                 <td>無權限</td>
             {% endif %}
-            {% if session == search[4] %}
+            {% if account == search[1] %}
             <td>
                 <form action="/remove" method="post">
                 <input type="hidden" name="machine_id" value="{{search[0]}}">
@@ -73,10 +76,10 @@
                 {% for cell in v %}
                     <td>{{cell}}</td>
                 {% endfor %}
-                {% if session != v[3] %}
+                {% if account != v[0] %}
                     <td>無權限</td>
                 {% endif %}
-                {% if session == v[3] %}
+                {% if account == v[0] %}
                 <td>
                     <form action="/remove" method="post">
                         <input type="hidden" name="machine_id" value="{{k}}">

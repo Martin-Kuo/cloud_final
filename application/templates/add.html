@@ -10,6 +10,11 @@
 </head>
 
 <body>
+    <!-- show below only if session exist -->
+    <p align="right">{{username}}&nbsp您好&nbsp</p>
+    <form align="right" action="/logout">
+        <input type="submit" value="登出" />
+    </form>
     <h1 align="center">新增維護機器</h1>
     <!-- show flashed message -->
     {% for message in get_flashed_messages() %}
@@ -22,10 +27,10 @@
                 <td>請輸入機器ID: <input type="text" name="machine_id"></td>
             </tr>
             <tr>
-                <td>起始日期: <input type="date" name="maintain_date"></td>
+                <td>起始日期: <input type="date" name="start_date"></td>
             </tr>
             <tr>
-                <td>維護間隔: <select name="interval">
+                <td>維護頻率: <select name="maintain_freq">
                     {% for n in range(1,32)%}
                         <option value="{{n}}">{{n}}</option>
                     {% endfor %}

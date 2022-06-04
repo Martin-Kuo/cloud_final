@@ -73,15 +73,16 @@ def login():
 @application.route('/index')
 def index():
     if 'account' in session: # 如果使用者是登入狀態
-        user = session['username']
+        username = session['username']
+        account = session['account']
         rows = None
-        sql = "SELECT * FROM Maintenance"
-        cur.execute(sql)
+        sql = "SELECT * FROM Maintenance Where member_id=(%s)"
+        cur.execute(sql,(account))
         conn.commit()
         rows = cur.fetchall()
         for r in rows:
-            data[r[0]] = [r[1],r[2],r[3],r[4]] # machine_id = maintain_date, day_diff, next_maintain, email
-        return render_template('index.html', session = user, data=data)
+            data[r[0]] = [r[1],r[2],r[3],r[4],r[5],r[6],r[7]] # machine_id = member_id, start_date, end_date, last_maintain_date, next_maintain_date, state, maintain_freq
+        return render_template('index.html', username = username, account = account, data=data)
 
 # 註冊頁面
 @application.route('/signup')
@@ -120,52 +121,67 @@ def logout():
 # 新增頁面
 @application.route('/add')
 def add():
-    return render_template('add.html')
+    username = session['username']
+    account = session['account']
+    return render_template('add.html', username = username, account = account)
 
 # 新增
 @application.route('/insert', methods=['POST', 'GET'])
 def insert():
-    user = session['username']
+    username = session['username']
+    account = session['account']
+
+    # 找出郵件
+    email_sql = "SELECT email FROM `Member` WHERE account=(%s)"
+    cur.execute(email_sql,(account))
+    conn.commit()
+    email = cur.fetchone()
+
+    # 新增維護機器
     machine_id = request.form.get('machine_id')
     if machine_id in data: # 如果machine id重複，提醒
         flash("機器已存在!") 
-        return render_template('add.html', session = user, data=data)
-    maintain_date = request.form.get('maintain_date')
-    interval = request.form.get('interval')
-    next_maintain_date = datetime.datetime.strptime(maintain_date, "%Y-%m-%d") + datetime.timedelta(days=int(interval))
-    sql = "INSERT INTO `maintain_schedule` (`machine_id`, `maintain_date`, `day_diff`, `next_maintain`, `email`) VALUES (%s, %s, %s, %s, %s)"
-    cur.execute(sql,(machine_id, maintain_date, interval, next_maintain_date.date(), user))
+        return render_template('add.html', username = username, account = account, data=data)
+    start_date = request.form.get('start_date')
+    maintain_freq = request.form.get('maintain_freq')
+    next_maintain_date = datetime.datetime.strptime(start_date, "%Y-%m-%d") + datetime.timedelta(days=int(maintain_freq))
+    insert_sql = "INSERT INTO `Maintenance` (`machine_id`, `member_id`, `start_date`, `next_maintain_date`, `maintain_freq`) VALUES (%s, %s, %s, %s, %s)"
+    cur.execute(insert_sql,(machine_id, account, start_date, next_maintain_date.date(), maintain_freq))
     conn.commit()
+
     # 如果是明天要維修,寄郵件通知
     today = str(date.today())
     check = datetime.datetime.strptime(today, "%Y-%m-%d")+datetime.timedelta(days=1)
-    if (str(check.date())) == maintain_date:
-        send_email(user, machine_id, maintain_date)
+    '''
+    if (str(check.date())) == start_date:
+        send_email(email, machine_id, start_date)
+    '''
     if (str(check.date())) == str(next_maintain_date.date()):
-        send_email(user, machine_id, next_maintain_date.date())
+        send_email(email, machine_id, next_maintain_date.date())
     return redirect(url_for('index'))
 
 # 查詢
 @application.route('/searching', methods=['POST', 'GET'])
 def searching():
-    user = session['username']
+    username = session['username']
+    account = session['account']
     target = None
     machine_id = request.args.get('machine_id')
-    sql = "SELECT * FROM `maintain_schedule` WHERE machine_id=(%s)"
-    cur.execute(sql,(machine_id))
+    searching_sql = "SELECT * FROM `Maintenance` WHERE machine_id=(%s)"
+    cur.execute(searching_sql,(machine_id))
     conn.commit()
     target = cur.fetchone()
     if target == None:
         flash("找不到機器!") 
-        return render_template('index.html', session = user, data=data)
-    return render_template('index.html', session = user, search=target, data=data)
+        return render_template('index.html', username = username, account = account, data=data)
+    return render_template('index.html', username = username, account = account, search=target, data=data)
 
 # 刪除
 @application.route('/remove', methods=['POST'])
 def remove():
     if request.method == 'POST':
         machine_id = request.form.get('machine_id')
-        sql = "DELETE FROM `maintain_schedule` WHERE machine_id=(%s)"
+        sql = "DELETE FROM `Maintenance` WHERE machine_id=(%s)"
         cur.execute(sql,(machine_id))
         conn.commit()
         del data[machine_id]
