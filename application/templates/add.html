@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>維護機器新增</title>
+    <style>
+     
+    </style>
+</head>
+
+<body>
+    <h1 align="center">新增維護機器</h1>
+
+    <form action="/submit" method="post" align="center">
+        <p>請輸入機器ID: <input type="text" name="machine_id"></p>
+        <p>起始日期: <input type="date" name="maintain_date"></p>
+        <p>維護間隔: <select name="interval">
+            {% for n in range(1,32)%}
+                <option value="{{n}}">{{n}}</option>
+            {% endfor %}
+        </select></p>
+        <p><input type="submit" value="新增"></p>
+    </form>
+    <!-- show flashed message -->
+    {% for message in get_flashed_messages() %}
+        <h1 align="center">{{ message }}</h1>
+    {% endfor %}
+    
+</body>
+</html>

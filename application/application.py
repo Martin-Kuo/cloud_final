@@ -67,6 +67,11 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('index'))
 
+#新增頁面
+@application.route('/add')
+def add():
+    return render_template('add.html')
+
 # 新增
 @application.route('/submit', methods=['POST', 'GET'])
 def submit():
