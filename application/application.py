@@ -64,10 +64,12 @@ def login():
     elif password != target[2]:
         flash("輸入密碼錯誤!") 
         return render_template('login.html')
-    else:        
+    else:
         session['account'] = target[0] # 記錄使用者登入session
         session['username'] = target[1]
         return redirect(url_for('index'))
+        
+        
 
 # 主頁面
 @application.route('/index')
@@ -76,12 +78,17 @@ def index():
         username = session['username']
         account = session['account']
         rows = None
+        '''
         sql = "SELECT * FROM Maintenance Where member_id=(%s)"
+        '''
+        sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE member_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
         cur.execute(sql,(account))
         conn.commit()
         rows = cur.fetchall()
+        print(rows)
+        data = {}
         for r in rows:
-            data[r[0]] = [r[1],r[2],r[3],r[4],r[5],r[6],r[7]] # machine_id = member_id, start_date, end_date, last_maintain_date, next_maintain_date, state, maintain_freq
+            data[r[0]] = [r[8],r[2],r[3],r[4],r[5],r[6],r[7]] # machine_id = username, start_date, end_date, last_maintain_date, next_maintain_date, state, maintain_freq, 
         return render_template('index.html', username = username, account = account, data=data)
 
 # 註冊頁面
@@ -115,7 +122,7 @@ def signup_act():
 @application.route('/logout')
 def logout():
     session.pop('account', None)
-    session.pop('username', None)
+    session.pop('username', None)    
     return redirect(url_for('start'))
 
 # 新增頁面
@@ -165,16 +172,30 @@ def insert():
 def searching():
     username = session['username']
     account = session['account']
-    target = None
+    rows = None
     machine_id = request.args.get('machine_id')
+    '''
     searching_sql = "SELECT * FROM `Maintenance` WHERE machine_id=(%s)"
-    cur.execute(searching_sql,(machine_id))
+    
+    searching_sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE machine_id = (%s) AND member_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
+    cur.execute(searching_sql,(machine_id,account))
     conn.commit()
     target = cur.fetchone()
-    if target == None:
+    '''
+
+    searching_sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE machine_id = (%s) AND member_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
+    cur.execute(searching_sql,(machine_id,account))
+    conn.commit()
+    rows = cur.fetchall()
+    data = {}
+
+    if len(rows) == 0:
         flash("找不到機器!") 
         return render_template('index.html', username = username, account = account, data=data)
-    return render_template('index.html', username = username, account = account, search=target, data=data)
+    else:
+        for r in rows:
+            data[r[0]] = [r[8],r[2],r[3],r[4],r[5],r[6],r[7]] # machine_id = username, start_date, end_date, last_maintain_date, next_maintain_date, state, maintain_freq, 
+        return render_template('index.html', username = username, account = account, search=data, data = data )
 
 # 刪除
 @application.route('/remove', methods=['POST'])
@@ -184,7 +205,6 @@ def remove():
         sql = "DELETE FROM `Maintenance` WHERE machine_id=(%s)"
         cur.execute(sql,(machine_id))
         conn.commit()
-        del data[machine_id]
         return redirect(url_for('index'))
 
 # 寄郵件
