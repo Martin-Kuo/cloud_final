@@ -60,6 +60,8 @@ def login():
         usr = request.form.get('username')
         session['username'] = usr # 記錄使用者登入session
         return redirect(url_for('index'))
+    else:
+        return render_template('login.html')
 
 # 登出
 @application.route('/logout')
