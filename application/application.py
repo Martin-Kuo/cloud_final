@@ -33,8 +33,13 @@ application.config['SECRET_KEY'] = os.urandom(24) # 加密用金鑰
 
 data = {}
 
-# 主頁
+# 登入頁面
 @application.route('/')
+def start():
+    return render_template('login.html')
+
+# 主頁
+@application.route('/index')
 def index():
     if 'username' in session: # 如果使用者是登入狀態
         user = session['username']
@@ -45,10 +50,8 @@ def index():
         for r in rows:
             data[r[0]] = [r[1],r[2],r[3],r[4]] # machine_id = maintain_date, day_diff, next_maintain, email
         return render_template('index.html', session = user, data=data)
-    else:
-        return render_template('login.html')
 
-#註冊
+# 註冊
 @application.route('/signup')
 def signup():
     return render_template('signup.html')
@@ -60,14 +63,12 @@ def login():
         usr = request.form.get('username')
         session['username'] = usr # 記錄使用者登入session
         return redirect(url_for('index'))
-    else:
-        return render_template('login.html')
 
 # 登出
 @application.route('/logout')
 def logout():
     session.pop('username', None)
-    return redirect(url_for('index'))
+    return redirect(url_for('start'))
 
 #新增頁面
 @application.route('/add')
