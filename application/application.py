@@ -70,45 +70,48 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('start'))
 
-#新增頁面
+# 新增頁面
 @application.route('/add')
 def add():
     return render_template('add.html')
 
 # 新增
-@application.route('/submit', methods=['POST', 'GET'])
-def submit():
+@application.route('/insert', methods=['POST', 'GET'])
+def insert():
     user = session['username']
-    if request.method == 'POST':
-        machine_id = request.form.get('machine_id')
-        if machine_id in data: # 如果machine id重複，提醒
-            flash("機器已存在!") 
-            return render_template('add.html', session = user, data=data)
-        maintain_date = request.form.get('maintain_date')
-        interval = request.form.get('interval')
-        next_maintain_date = datetime.datetime.strptime(maintain_date, "%Y-%m-%d") + datetime.timedelta(days=int(interval))
-        sql = "INSERT INTO `maintain_schedule` (`machine_id`, `maintain_date`, `day_diff`, `next_maintain`, `email`) VALUES (%s, %s, %s, %s, %s)"
-        cur.execute(sql,(machine_id, maintain_date, interval, next_maintain_date.date(), user))
-        conn.commit()
-        # 如果是明天要維修,寄郵件通知
-        today = str(date.today())
-        check = datetime.datetime.strptime(today, "%Y-%m-%d")+datetime.timedelta(days=1)
-        if (str(check.date())) == maintain_date:
-            send_email(user, machine_id, maintain_date)
-        if (str(check.date())) == str(next_maintain_date.date()):
-            send_email(user, machine_id, next_maintain_date.date())
-        return redirect(url_for('index'))
-    else:
-        target = None
-        machine_id = request.args.get('machine_id')
-        sql = "SELECT * FROM `maintain_schedule` WHERE machine_id=(%s)"
-        cur.execute(sql,(machine_id))
-        conn.commit()
-        target = cur.fetchone()
-        if target == None:
-            flash("找不到機器!") 
-            return render_template('index.html', session = user, data=data)
-        return render_template('index.html', session = user, search=target, data=data)
+    machine_id = request.form.get('machine_id')
+    if machine_id in data: # 如果machine id重複，提醒
+        flash("機器已存在!") 
+        return render_template('add.html', session = user, data=data)
+    maintain_date = request.form.get('maintain_date')
+    interval = request.form.get('interval')
+    next_maintain_date = datetime.datetime.strptime(maintain_date, "%Y-%m-%d") + datetime.timedelta(days=int(interval))
+    sql = "INSERT INTO `maintain_schedule` (`machine_id`, `maintain_date`, `day_diff`, `next_maintain`, `email`) VALUES (%s, %s, %s, %s, %s)"
+    cur.execute(sql,(machine_id, maintain_date, interval, next_maintain_date.date(), user))
+    conn.commit()
+    # 如果是明天要維修,寄郵件通知
+    today = str(date.today())
+    check = datetime.datetime.strptime(today, "%Y-%m-%d")+datetime.timedelta(days=1)
+    if (str(check.date())) == maintain_date:
+        send_email(user, machine_id, maintain_date)
+    if (str(check.date())) == str(next_maintain_date.date()):
+        send_email(user, machine_id, next_maintain_date.date())
+    return redirect(url_for('index'))
+
+# 查詢
+@application.route('/searching', methods=['POST', 'GET'])
+def searching():
+    user = session['username']
+    target = None
+    machine_id = request.args.get('machine_id')
+    sql = "SELECT * FROM `maintain_schedule` WHERE machine_id=(%s)"
+    cur.execute(sql,(machine_id))
+    conn.commit()
+    target = cur.fetchone()
+    if target == None:
+        flash("找不到機器!") 
+        return render_template('index.html', session = user, data=data)
+    return render_template('index.html', session = user, search=target, data=data)
 
 # 刪除
 @application.route('/remove', methods=['POST'])

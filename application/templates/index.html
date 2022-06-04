@@ -31,8 +31,8 @@
         <input type="submit" value="登出" />
     </form>
     <h1 align="center">機器系統管理頁面</h1>
-    <form action="/submit" method="get" align="center">
-        <p>請輸入機器ID: <input type="text" name="machine_id">&nbsp&nbsp<input type="submit" value="搜尋">&nbsp&nbsp<input type="submit" value="全部"></p>
+    <form action="/searching" method="get" align="center">
+        <p>請輸入機器ID: <input type="text" name="machine_id">&nbsp&nbsp<input type="submit" value="搜尋">&nbsp&nbsp<input type="button" value="全部" onclick="location.href='./index'"></p>
     </form>
     <!-- show flashed message -->
     {% for message in get_flashed_messages() %}
