@@ -48,6 +48,11 @@ def index():
     else:
         return render_template('login.html')
 
+#註冊
+@application.route('/signup')
+def signup():
+    return render_template('signup.html')
+
 # 登入
 @application.route('/login', methods=['POST', 'GET'])
 def login():
