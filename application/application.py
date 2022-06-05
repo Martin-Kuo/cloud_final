@@ -81,13 +81,13 @@ def index():
         flag = session['flag']
 
         if flag == 'Y':
-            sql = "SELECT M.* , Mem.`username` FROM `Maintenance` M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
+            sql = "SELECT M.* , Mem.`username` FROM `Maintenance` M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account` ORDER BY next_maintain_date"
             cur.execute(sql)
             conn.commit()
             rows = cur.fetchall()
 
         else:
-            sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE member_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
+            sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE member_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account` ORDER BY next_maintain_date"
             cur.execute(sql,(account))
             conn.commit()
             rows = cur.fetchall()
