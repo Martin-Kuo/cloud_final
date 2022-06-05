@@ -14,32 +14,34 @@
     <form align="right" action="/logout">
         <input type="submit" class="btn" value="登出" />
     </form>
-    <h1 align="center">機器系統管理頁面</h1>
-    <p align="center">
-        <input type="button" class="btn" value="新增" onclick="location.href='./add'">
-    </p>
-    <form action="/searching" method="get" align="center">
-        <p>請輸入機器ID: 
+    
+    <form action="/searching" method="get" align="center" class="form-style-index">
+        <h1 align="center">機器系統管理頁面</h1>
+        <p align="center">
+            <input type="button" class="btn" value="新增機器" onclick="location.href='./add'">
+        </p>
+        <ul>
+            請輸入機器ID:
             <input type="text" name="machine_id">&nbsp&nbsp
             <input type="submit" class="btn" value="搜尋">&nbsp&nbsp
             <input type="button" class="btn" value="全部" onclick="location.href='./index'">
-        </p>
+        </ul>
     </form>
     <!-- show flashed message -->
     {% for message in get_flashed_messages() %}
     <h1 align="center">{{ message }}</h1>
     {% endfor %}
-    <table  border="2" CELLPADDING="5" align="center">
+    <table  border="2" CELLPADDING="5" align="center" id="customers">
         <tr align="center">
-            <td>機器ID</td>
-            <td>維護者</td>
-            <td>啟用日期</td>
-            <td>停用日期</td>
-            <td>上次維護日期</td>
-            <td>下次維護日期</td>
-            <td>機器狀態</td>
-            <td>維護頻率</td>
-            <td>機器刪除</td>
+            <th>機器ID</th>
+            <th>維護者</th>
+            <th>啟用日期</th>
+            <th>停用日期</th>
+            <th>上次維護日期</th>
+            <th>下次維護日期</th>
+            <th>機器狀態</th>
+            <th>維護頻率</th>
+            <th>機器刪除</th>
         </tr>
 
         {% if search %}

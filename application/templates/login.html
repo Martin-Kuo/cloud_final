@@ -9,11 +9,12 @@
 
 <body>
     <div class="box box_son">
-        <div class="content"> 
+        <div class="content">
             <!-- show flashed message -->
             {% for message in get_flashed_messages() %}
             <p align="center">{{ message }}</p>
             {% endfor %}
+            <!--
             <table border="2" align="center" CELLPADDING="5">
                 <tr>
                     <td colspan="2" align="center">機器管理系統</td>
@@ -40,7 +41,25 @@
                     </tr>
                 </form>
             </table>
-        </div> 
+            -->
+            <form action="/login" method="post" class="form-style-9">
+                <ul>
+                    <h1 align="center">機器管理系統</h1>
+                    <li>
+                        <label>帳號:</label>
+                        <input type="text" name="account" required>
+                    </li>
+                    <li>
+                        <label>密碼:</label>
+                        <input type="text" name="password" required>
+                    </li>
+                    <div align="center">
+                        <input type="submit" class="btn" value="登入">
+                        <input type="button" class="btn" value="註冊" onclick="location.href='./signup'">
+                    </div>
+                </ul>
+            </form>
+        </div>
     </div>
 </body>
 </html>

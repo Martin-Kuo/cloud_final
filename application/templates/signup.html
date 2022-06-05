@@ -16,6 +16,7 @@
             {% for message in get_flashed_messages() %}
             <p align="center">{{ message }}</p>
             {% endfor %}
+            <!--
             <table border="2" align="center" CELLPADDING="5">
                 <tr>
                     <td colspan="2" align="center">使用者註冊</td>
@@ -53,6 +54,34 @@
                     </tr>
                 </form>
             </table>
+            -->
+            <form action="/signup_act"  method="post" class="form-style-9">
+                <ul>
+                    <h1 align="center">使用者註冊</h1>
+                    <li>
+                        <label>姓名:</label>
+                        <input type="text" name="username" required>
+                    </li>
+                    <li>
+                        <label>帳號:</label>
+                        <input type="text" name="account" required>
+                    </li>
+                    <li>
+                        <label>密碼:</label>
+                        <input type="text" name="password" required>
+                    </li>
+                    <li>
+                        <label>信箱:</label>
+                        <input type="text" name="email" required>
+                    </li>
+                    <div align="center">
+                        <input type="submit" class="btn" value="確認">
+                        <input type="button" class="btn" value="取消" onclick="location.href='./'">
+                    </div>
+                </ul>  
+            </form>
+
+
         </div> 
     </div>
 </body>
