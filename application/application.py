@@ -136,13 +136,25 @@ def logout():
 def add():
     username = session['username']
     account = session['account']
-    return render_template('add.html', username = username, account = account)
+    flag = session['flag']
+    list ={}
+
+    if flag == 'Y':
+        sql = "SELECT account,username FROM `Member`"
+        cur.execute(sql)
+        conn.commit()
+        rows = cur.fetchall()
+        for i in rows:
+            list[i[0]] = [i[0],i[1]]
+            
+    return render_template('add.html', username = username, account = account, flag = flag, list =list)
 
 # 新增
 @application.route('/insert', methods=['POST', 'GET'])
 def insert():
     username = session['username']
     account = session['account']
+    flag = session['flag']
 
     # 找出郵件
     email_sql = "SELECT email FROM `Member` WHERE account=(%s)"
@@ -151,6 +163,7 @@ def insert():
     email = cur.fetchone()
 
     # 新增維護機器
+    acc = request.form.get('account')
     machine_id = request.form.get('machine_id')
     same = None
 
@@ -165,7 +178,12 @@ def insert():
     maintain_freq = request.form.get('maintain_freq')
     next_maintain_date = datetime.datetime.strptime(start_date, "%Y-%m-%d") + datetime.timedelta(days=int(maintain_freq))
     insert_sql = "INSERT INTO `Maintenance` (`machine_id`, `member_id`, `start_date`, `next_maintain_date`, `maintain_freq`) VALUES (%s, %s, %s, %s, %s)"
-    cur.execute(insert_sql,(machine_id, account, start_date, next_maintain_date.date(), maintain_freq))
+
+    if flag == 'Y':
+        cur.execute(insert_sql,(machine_id, acc, start_date, next_maintain_date.date(), maintain_freq))
+    else:
+        cur.execute(insert_sql,(machine_id, account, start_date, next_maintain_date.date(), maintain_freq))
+
     conn.commit()
 
     # 如果是明天要維修,寄郵件通知

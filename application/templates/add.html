@@ -23,6 +23,22 @@
 
     <table border="2" align="center" CELLPADDING="5">
         <form action="/insert" method="post">
+            {% if flag == 'Y' %}
+            <tr>
+                <td>
+                    維護者:
+                    <select name="account">
+                        {% for k,v in list.items() %}
+                            <option value="{{v[0]}}">{{v[1]}} - {{v[0]}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td>維護者: {{username}}</td>
+            </tr>
+            {% endif %}
             <tr>
                 <td>請輸入機器ID: <input type="text" name="machine_id"></td>
             </tr>
@@ -30,11 +46,13 @@
                 <td>起始日期: <input type="date" name="start_date"></td>
             </tr>
             <tr>
-                <td>維護頻率: <select name="maintain_freq">
-                    {% for n in range(1,32)%}
-                        <option value="{{n}}">{{n}}</option>
-                    {% endfor %}
-                </select></td>
+                <td>維護頻率: 
+                    <select name="maintain_freq">
+                        {% for n in range(1,32)%}
+                            <option value="{{n}}">{{n}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
             </tr>
             <tr align="center">
                 <td>
