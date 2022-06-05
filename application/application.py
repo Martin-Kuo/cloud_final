@@ -14,7 +14,7 @@ conn = pymysql.connect(
         user = 'root', 
         password = 'root',
         db = 'machine',
-        )
+    )
 '''
 
 # 連上資料庫
@@ -25,7 +25,7 @@ conn = pymysql.connect(
         user = 'admin', 
         password = 'rootroot',
         db = 'sys'
-        )
+    )
 '''
 conn = pymysql.connect(
         host= 'mydb.cmqgfis3u1l2.us-east-1.rds.amazonaws.com', 
@@ -33,7 +33,7 @@ conn = pymysql.connect(
         user = 'admin', 
         password = '01234567',
         db = 'sys'
-        )
+    )
 
 cur=conn.cursor() # 類似指標
 
@@ -143,9 +143,15 @@ def insert():
 
     # 新增維護機器
     machine_id = request.form.get('machine_id')
-    if machine_id in data: # 如果machine id重複，提醒
+    same = None
+
+    sql = "SELECT * FROM `Maintenance` WHERE machine_id=(%s)"
+    cur.execute(sql,(machine_id))
+    conn.commit()
+    same = cur.fetchone()
+    if same != None: # 如果machine id重複，提醒
         flash("機器已存在!") 
-        return render_template('add.html', username = username, account = account, data=data)
+        return render_template('add.html', username = username, account = account)
     start_date = request.form.get('start_date')
     maintain_freq = request.form.get('maintain_freq')
     next_maintain_date = datetime.datetime.strptime(start_date, "%Y-%m-%d") + datetime.timedelta(days=int(maintain_freq))
