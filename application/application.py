@@ -79,6 +79,7 @@ def index():
         username = session['username']
         account = session['account']
         flag = session['flag']
+        search_flag = 0
 
         if flag == 'Y':
             sql = "SELECT M.* , Mem.`username` FROM `Maintenance` M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account` ORDER BY next_maintain_date"
@@ -95,7 +96,7 @@ def index():
         data = {}
         for r in rows:
             data[r[0]] = [r[8],r[2],r[3],r[4],r[5],r[6],r[7]] # machine_id = username, start_date, end_date, last_maintain_date, next_maintain_date, state, maintain_freq, 
-        return render_template('index.html', username = username, account = account, data=data)
+        return render_template('index.html', username = username, account = account, data=data, search_flag=search_flag)
 
 # 註冊頁面
 @application.route('/signup')
@@ -146,7 +147,7 @@ def add():
         rows = cur.fetchall()
         for i in rows:
             list[i[0]] = [i[0],i[1]]
-            
+
     return render_template('add.html', username = username, account = account, flag = flag, list =list)
 
 # 新增
@@ -201,6 +202,7 @@ def searching():
     account = session['account']
     flag = session['flag']
     machine_id = request.args.get('machine_id')
+    search_flag =1
 
     if flag == 'Y':
         searching_sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE machine_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
@@ -216,11 +218,11 @@ def searching():
     data = {}
     if len(rows) == 0:
         flash("找不到機器!") 
-        return render_template('index.html', username = username, account = account, data=data)
+        return render_template('index.html', username = username, account = account, data=data, search_flag=search_flag)
     else:
         for r in rows:
             data[r[0]] = [r[8],r[2],r[3],r[4],r[5],r[6],r[7]] # machine_id = username, start_date, end_date, last_maintain_date, next_maintain_date, state, maintain_freq, 
-        return render_template('index.html', username = username, account = account, search=data, data = data )
+        return render_template('index.html', username = username, account = account, search=data, data = data, search_flag=search_flag)
 
 # 刪除
 @application.route('/remove', methods=['POST'])

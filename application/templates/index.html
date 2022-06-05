@@ -17,15 +17,14 @@
     
     <form action="/searching" method="get" align="center" class="form-style-index">
         <h1 align="center">機器系統管理頁面</h1>
-        <p align="center">
-            <input type="button" class="btn" value="新增機器" onclick="location.href='./add'">
-        </p>
         <ul>
             請輸入機器ID:
             <input type="text" name="machine_id">&nbsp&nbsp
             <input type="submit" class="btn" value="搜尋">&nbsp&nbsp
-            <input type="button" class="btn" value="全部" onclick="location.href='./index'">
         </ul>
+        <p align="center">
+            <input type="button" class="btn" value="新增機器" onclick="location.href='./add'">
+        </p>
     </form>
     <!-- show flashed message -->
     {% for message in get_flashed_messages() %}
@@ -44,7 +43,7 @@
             <th>機器刪除</th>
         </tr>
 
-        {% if search %}
+        {% if search_flag==1 %}
         {% for k,v in data.items() %}
             <tr align="center">
                 <td>{{k}}</td>
@@ -77,6 +76,9 @@
             {% endfor %}
         {% endif %}
     </table>
+    {% if search_flag==1 %}
+    <p align="center"><input type="button" class="btn" value="取消搜尋" onclick="location.href='./index'"></p>
+    {% endif %}
     {% endif %}
 </body>
 </html>
