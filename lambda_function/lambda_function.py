@@ -31,11 +31,23 @@ for r in rows:
 k = list(d.keys())
 
 # 更新維修日期
+'''
+sql="UPDATE Maintenance "\
+    "SET "\
+    "last_maintain_date = next_maintain_date, "\
+    "next_maintain_date = DATE_ADD(next_maintain_date , INTERVAL maintain_freq DAY) "\
+    "WHERE machine_id = machine_id AND maintain_date<(%s)"
+cur.execute(sql, today)
+conn.commit()
+'''
+
+
 sql="UPDATE maintain_schedule "\
     "SET "\
     "maintain_date = next_maintain, "\
     "next_maintain = DATE_ADD(next_maintain , INTERVAL day_diff DAY) "\
     "WHERE machine_id = machine_id AND maintain_date<(%s)"
+
 cur.execute(sql, today)
 conn.commit()
 
