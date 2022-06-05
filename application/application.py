@@ -53,7 +53,7 @@ def login():
     account = request.form.get('account')
     password = request.form.get('password')
     target = None
-    login_sql = "SELECT account,username,password FROM `Member` WHERE account=(%s)"
+    login_sql = "SELECT account,username,password,admin FROM `Member` WHERE account=(%s)"
     cur.execute(login_sql,(account))
     conn.commit()
     target = cur.fetchone()
@@ -67,6 +67,7 @@ def login():
     else:
         session['account'] = target[0] # 記錄使用者登入session
         session['username'] = target[1]
+        session['flag'] = target[3]
         return redirect(url_for('index'))
         
         
@@ -77,11 +78,19 @@ def index():
     if 'account' in session: # 如果使用者是登入狀態
         username = session['username']
         account = session['account']
-        rows = None
-        sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE member_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
-        cur.execute(sql,(account))
-        conn.commit()
-        rows = cur.fetchall()
+        flag = session['flag']
+
+        if flag == 'Y':
+            sql = "SELECT M.* , Mem.`username` FROM `Maintenance` M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
+            cur.execute(sql)
+            conn.commit()
+            rows = cur.fetchall()
+
+        else:
+            sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE member_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
+            cur.execute(sql,(account))
+            conn.commit()
+            rows = cur.fetchall()
 
         data = {}
         for r in rows:
@@ -172,14 +181,21 @@ def insert():
 def searching():
     username = session['username']
     account = session['account']
-    rows = None
+    flag = session['flag']
     machine_id = request.args.get('machine_id')
-    searching_sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE machine_id = (%s) AND member_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
-    cur.execute(searching_sql,(machine_id,account))
-    conn.commit()
-    rows = cur.fetchall()
-    data = {}
 
+    if flag == 'Y':
+        searching_sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE machine_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
+        cur.execute(searching_sql,(machine_id))
+        conn.commit()
+        rows = cur.fetchall()
+    else:
+        searching_sql = "SELECT M.* , Mem.`username` FROM ( SELECT * FROM `Maintenance` WHERE machine_id = (%s) AND member_id = (%s)) M LEFT JOIN `Member` Mem ON M.member_id = Mem.`account`"
+        cur.execute(searching_sql,(machine_id,account))
+        conn.commit()
+        rows = cur.fetchall()
+
+    data = {}
     if len(rows) == 0:
         flash("找不到機器!") 
         return render_template('index.html', username = username, account = account, data=data)
