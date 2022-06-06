@@ -179,13 +179,13 @@ def insert():
     start_date = request.form.get('start_date')
     maintain_freq = request.form.get('maintain_freq')
     today = str(date.today())
-    next_maintain_date = datetime.datetime.strptime(start_date, "%Y-%m-%d") + datetime.timedelta(days=int(maintain_freq))
+    # next_maintain_date = datetime.datetime.strptime(start_date, "%Y-%m-%d") + datetime.timedelta(days=int(maintain_freq))
     insert_sql = "INSERT INTO `Maintenance` (`machine_id`, `member_id`, `start_date`, `next_maintain_date`, `maintain_freq`) VALUES (%s, %s, %s, %s, %s)"
 
     if flag == 'Y':
-        cur.execute(insert_sql,(machine_id, acc, today, next_maintain_date.date(), maintain_freq))
+        cur.execute(insert_sql,(machine_id, acc, today, start_date.date(), maintain_freq))
     else:
-        cur.execute(insert_sql,(machine_id, account, today, next_maintain_date.date(), maintain_freq))
+        cur.execute(insert_sql,(machine_id, account, today, start_date.date(), maintain_freq))
 
     conn.commit()
 
