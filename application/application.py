@@ -17,7 +17,7 @@ conn = pymysql.connect(
     )
 '''
 
-# 連上資料庫
+# 連上資料庫(Jason的)
 '''
 conn = pymysql.connect(
         host= 'machinedatabase.cy453mcnxqjo.us-east-1.rds.amazonaws.com', 
@@ -27,6 +27,7 @@ conn = pymysql.connect(
         db = 'sys'
     )
 '''
+# 連上資料庫(Cindy的)
 conn = pymysql.connect(
         host= 'mydb.cmqgfis3u1l2.us-east-1.rds.amazonaws.com', 
         port = 3306,
