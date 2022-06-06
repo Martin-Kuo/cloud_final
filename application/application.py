@@ -236,6 +236,7 @@ def remove():
         return redirect(url_for('index'))
 
 # 寄郵件
+'''
 def send_email(user, machine_id, date):
     gmail_user = 'zexon02@gmail.com'
     gmail_app_password = 'ehxlvsituvqehkfl'
@@ -255,6 +256,8 @@ def send_email(user, machine_id, date):
         print('Email sent!')
     except Exception as exception:
         print("Error: %s!\n\n" % exception)
+'''
+
 
 if __name__ == '__main__':
     application.run(debug = True)

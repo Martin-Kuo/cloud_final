@@ -40,10 +40,14 @@ conn.commit()
 rows = rows + cur.fetchall()
 '''
 
-send_sql = "SELECT M.machine_id, Mem.email, M.next_maintain_date FROM Maintenance M, `Member` Mem WHERE M.next_maintain_date =(%s) AND M.member_id = Mem.account"
+send_sql = "SELECT M.machine_id, Mem.email, M.start_date FROM Maintenance M, `Member` Mem WHERE M.start_date =(%s) AND M.member_id = Mem.account"
 cur.execute(send_sql, (today+datetime.timedelta(days=1)))
 conn.commit()
 rows = cur.fetchall()
+send_sql = "SELECT M.machine_id, Mem.email, M.next_maintain_date FROM Maintenance M, `Member` Mem WHERE M.next_maintain_date =(%s) AND M.member_id = Mem.account"
+cur.execute(send_sql, (today+datetime.timedelta(days=1)))
+conn.commit()
+rows = rows + cur.fetchall()
 
 d = {}
 for r in rows:
@@ -64,7 +68,7 @@ cur.execute(sql, today)
 conn.commit()
 '''
 
-check_sql = "SELECT machine_id FROM Maintenance WHERE next_maintain_date =(%s) "
+check_sql = "SELECT machine_id FROM Maintenance WHERE next_maintain_date <= (%s) "
 cur.execute(check_sql, (today))
 conn.commit()
 check_rows = cur.fetchall()
@@ -75,7 +79,7 @@ if len(check_rows) > 0:
     "SET "\
     "last_maintain_date = next_maintain_date, "\
     "next_maintain_date = DATE_ADD(next_maintain_date , INTERVAL maintain_freq DAY) "\
-    "WHERE machine_id = machine_id AND maintain_date=(%s)"
+    "WHERE machine_id = machine_id AND maintain_date <=(%s)"
     cur.execute(update_sql, (today))
     conn.commit()
 
