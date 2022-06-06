@@ -178,23 +178,27 @@ def insert():
         return render_template('add.html', username = username, account = account)
     start_date = request.form.get('start_date')
     maintain_freq = request.form.get('maintain_freq')
+    today = str(date.today())
     next_maintain_date = datetime.datetime.strptime(start_date, "%Y-%m-%d") + datetime.timedelta(days=int(maintain_freq))
     insert_sql = "INSERT INTO `Maintenance` (`machine_id`, `member_id`, `start_date`, `next_maintain_date`, `maintain_freq`) VALUES (%s, %s, %s, %s, %s)"
 
     if flag == 'Y':
-        cur.execute(insert_sql,(machine_id, acc, start_date, next_maintain_date.date(), maintain_freq))
+        cur.execute(insert_sql,(machine_id, acc, today, next_maintain_date.date(), maintain_freq))
     else:
-        cur.execute(insert_sql,(machine_id, account, start_date, next_maintain_date.date(), maintain_freq))
+        cur.execute(insert_sql,(machine_id, account, today, next_maintain_date.date(), maintain_freq))
 
     conn.commit()
 
-    # 如果是明天要維修,寄郵件通知
+'''
+ # 如果是明天要維修,寄郵件通知
     today = str(date.today())
     check = datetime.datetime.strptime(today, "%Y-%m-%d")+datetime.timedelta(days=1)
 
     if (str(check.date())) == str(next_maintain_date.date()):
         send_email(email, machine_id, next_maintain_date.date())
     return redirect(url_for('index'))
+'''
+   
 
 # 查詢
 @application.route('/searching', methods=['POST', 'GET'])

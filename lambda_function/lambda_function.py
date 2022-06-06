@@ -29,25 +29,11 @@ conn = pymysql.connect(
 
 cur=conn.cursor()
 
-'''
-sql = "SELECT machine_id,email,maintain_date FROM maintain_schedule WHERE maintain_date=(%s)"
-cur.execute(sql, (today+datetime.timedelta(days=1)))
-conn.commit()
-rows = cur.fetchall()
-sql = "SELECT machine_id,email,next_maintain FROM maintain_schedule WHERE next_maintain=(%s)"
-cur.execute(sql, (today+datetime.timedelta(days=1)))
-conn.commit()
-rows = rows + cur.fetchall()
-'''
-
-send_sql = "SELECT M.machine_id, Mem.email, M.start_date FROM Maintenance M, `Member` Mem WHERE M.start_date =(%s) AND M.member_id = Mem.account"
-cur.execute(send_sql, (today+datetime.timedelta(days=1)))
-conn.commit()
-rows = cur.fetchall()
+# 找出隔天需要維護的機器(next_maintain_date)
 send_sql = "SELECT M.machine_id, Mem.email, M.next_maintain_date FROM Maintenance M, `Member` Mem WHERE M.next_maintain_date =(%s) AND M.member_id = Mem.account"
 cur.execute(send_sql, (today+datetime.timedelta(days=1)))
 conn.commit()
-rows = rows + cur.fetchall()
+rows = cur.fetchall()
 
 d = {}
 for r in rows:
@@ -56,19 +42,8 @@ for r in rows:
 k = list(d.keys())
 
 
-# 更新維修日期
-'''
-sql="UPDATE maintain_schedule "\
-    "SET "\
-    "maintain_date = next_maintain, "\
-    "next_maintain = DATE_ADD(next_maintain , INTERVAL day_diff DAY) "\
-    "WHERE machine_id = machine_id AND maintain_date<(%s)"
-
-cur.execute(sql, today)
-conn.commit()
-'''
-
-check_sql = "SELECT machine_id FROM Maintenance WHERE next_maintain_date <= (%s) "
+# 找出當日維修的機器
+check_sql = "SELECT machine_id FROM Maintenance WHERE next_maintain_date = (%s) "
 cur.execute(check_sql, (today))
 conn.commit()
 check_rows = cur.fetchall()
@@ -79,7 +54,7 @@ if len(check_rows) > 0:
     "SET "\
     "last_maintain_date = next_maintain_date, "\
     "next_maintain_date = DATE_ADD(next_maintain_date , INTERVAL maintain_freq DAY) "\
-    "WHERE machine_id = machine_id AND maintain_date <=(%s)"
+    "WHERE machine_id = machine_id AND next_maintain_date =(%s)"
     cur.execute(update_sql, (today))
     conn.commit()
 
