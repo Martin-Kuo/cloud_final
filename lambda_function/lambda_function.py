@@ -29,6 +29,7 @@ conn = pymysql.connect(
 
 cur=conn.cursor()
 
+'''
 sql = "SELECT machine_id,email,maintain_date FROM maintain_schedule WHERE maintain_date=(%s)"
 cur.execute(sql, (today+datetime.timedelta(days=1)))
 conn.commit()
@@ -37,25 +38,22 @@ sql = "SELECT machine_id,email,next_maintain FROM maintain_schedule WHERE next_m
 cur.execute(sql, (today+datetime.timedelta(days=1)))
 conn.commit()
 rows = rows + cur.fetchall()
+'''
+
+send_sql = "SELECT M.machine_id, Mem.email, M.next_maintain_date FROM Maintenance M, `Member` Mem WHERE M.next_maintain_date =(%s) AND M.member_id = Mem.account"
+cur.execute(send_sql, (today+datetime.timedelta(days=1)))
+conn.commit()
+rows = cur.fetchall()
 
 d = {}
 for r in rows:
-	d[r[0]] = [r[1],r[2]] # machine_id = [email, maintain_date/next_maintain]
+	d[r[0]] = [r[1],r[2]] # machine_id = [email, next_maintain_date]
 	
 k = list(d.keys())
 
+
 # 更新維修日期
 '''
-sql="UPDATE Maintenance "\
-    "SET "\
-    "last_maintain_date = next_maintain_date, "\
-    "next_maintain_date = DATE_ADD(next_maintain_date , INTERVAL maintain_freq DAY) "\
-    "WHERE machine_id = machine_id AND maintain_date<(%s)"
-cur.execute(sql, today)
-conn.commit()
-'''
-
-
 sql="UPDATE maintain_schedule "\
     "SET "\
     "maintain_date = next_maintain, "\
@@ -64,6 +62,22 @@ sql="UPDATE maintain_schedule "\
 
 cur.execute(sql, today)
 conn.commit()
+'''
+
+check_sql = "SELECT machine_id FROM Maintenance WHERE next_maintain_date =(%s) "
+cur.execute(check_sql, (today))
+conn.commit()
+check_rows = cur.fetchall()
+
+if len(check_rows) > 0:
+
+    update_sql="UPDATE Maintenance "\
+    "SET "\
+    "last_maintain_date = next_maintain_date, "\
+    "next_maintain_date = DATE_ADD(next_maintain_date , INTERVAL maintain_freq DAY) "\
+    "WHERE machine_id = machine_id AND maintain_date=(%s)"
+    cur.execute(update_sql, (today))
+    conn.commit()
 
 def lambda_handler(event, context):
     
@@ -81,7 +95,7 @@ def send_email(machine_id):
     gmail_app_password = 'ehxlvsituvqehkfl'
     
     msg = EmailMessage()
-    msg['Subject'] = 'Machine Notification'
+    msg['Subject'] = '機器維護通知'
     msg['From'] = gmail_user
     msg['To'] = d[machine_id][0]
     msg.set_content('Please maintain your machine ' + machine_id + ' on '+ str(d[machine_id][1]))
