@@ -180,6 +180,7 @@ def insert():
     maintain_freq = request.form.get('maintain_freq')
     today = str(date.today())
     # next_maintain_date = datetime.datetime.strptime(start_date, "%Y-%m-%d") + datetime.timedelta(days=int(maintain_freq))
+    start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
     insert_sql = "INSERT INTO `Maintenance` (`machine_id`, `member_id`, `start_date`, `next_maintain_date`, `maintain_freq`) VALUES (%s, %s, %s, %s, %s)"
 
     if flag == 'Y':
