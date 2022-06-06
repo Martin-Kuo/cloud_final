@@ -6,6 +6,9 @@ import smtplib
 from email.message import EmailMessage
 
 today = date.today()
+
+# 連上資料庫(Jason的)
+'''
 conn = pymysql.connect(
         host= 'machinedatabase.cy453mcnxqjo.us-east-1.rds.amazonaws.com', 
         port = 3306,
@@ -13,6 +16,17 @@ conn = pymysql.connect(
         password = 'rootroot',
         db = 'sys'
         )
+'''
+
+# 連上資料庫(Cindy的)
+conn = pymysql.connect(
+        host= 'mydb.cmqgfis3u1l2.us-east-1.rds.amazonaws.com', 
+        port = 3306,
+        user = 'admin', 
+        password = '01234567',
+        db = 'sys'
+    )
+
 cur=conn.cursor()
 
 sql = "SELECT machine_id,email,maintain_date FROM maintain_schedule WHERE maintain_date=(%s)"
