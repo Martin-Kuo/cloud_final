@@ -108,7 +108,7 @@ input[type="button"],input[type="submit"] {
 #customers {
     font-family: Arial, Helvetica, sans-serif;
     border-collapse: collapse;
-    width: 800px;
+    width: 1024px;
   }
   
 #customers td, #customers th {

@@ -96,7 +96,7 @@ def index():
 
         data = {}
         for r in rows:
-            data[r[0]] = [r[8],r[2],r[3],r[4],r[5],r[6],r[7]] # machine_id = username, start_date, end_date, last_maintain_date, next_maintain_date, state, maintain_freq, 
+            data[r[0]] = [r[8],r[2],r[4],r[5],r[6],r[7]] # machine_id = username, start_date, last_maintain_date, next_maintain_date, state, maintain_freq, 
         return render_template('index.html', username = username, account = account, data=data, search_flag=search_flag)
 
 # 註冊頁面
@@ -228,7 +228,7 @@ def searching():
         return render_template('index.html', username = username, account = account, data=data, search_flag=search_flag)
     else:
         for r in rows:
-            data[r[0]] = [r[8],r[2],r[3],r[4],r[5],r[6],r[7]] # machine_id = username, start_date, end_date, last_maintain_date, next_maintain_date, state, maintain_freq, 
+            data[r[0]] = [r[8],r[2],r[4],r[5],r[6],r[7]] # machine_id = username, start_date, last_maintain_date, next_maintain_date, state, maintain_freq, 
         return render_template('index.html', username = username, account = account, search=data, data = data, search_flag=search_flag)
 
 # 刪除
