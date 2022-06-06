@@ -189,6 +189,8 @@ def insert():
 
     conn.commit()
 
+    return redirect(url_for('index'))
+    
 '''
  # 如果是明天要維修,寄郵件通知
     today = str(date.today())
@@ -196,9 +198,8 @@ def insert():
 
     if (str(check.date())) == str(next_maintain_date.date()):
         send_email(email, machine_id, next_maintain_date.date())
-    return redirect(url_for('index'))
+    
 '''
-   
 
 # 查詢
 @application.route('/searching', methods=['POST', 'GET'])
