@@ -98,7 +98,7 @@ def send_email(machine_id):
     msg['Subject'] = '機器維護通知'
     msg['From'] = gmail_user
     msg['To'] = d[machine_id][0]
-    msg.set_content('Please maintain your machine ' + machine_id + ' on '+ str(d[machine_id][1]))
+    msg.set_content('維護機台ID為： ' + machine_id + ' on '+ str(d[machine_id][1]))
     
     try:
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
