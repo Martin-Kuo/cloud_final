@@ -148,7 +148,6 @@ def add():
         rows = cur.fetchall()
         for i in rows:
             list[i[0]] = [i[0],i[1]]
-
     return render_template('add.html', username = username, account = account, flag = flag, list =list)
 
 # 新增
@@ -175,7 +174,7 @@ def insert():
     same = cur.fetchone()
     if same != None: # 如果machine id重複，提醒
         flash("機器已存在!") 
-        return render_template('add.html', username = username, account = account)
+        return redirect(url_for('add'))
     start_date = request.form.get('start_date')
     maintain_freq = request.form.get('maintain_freq')
     today = str(date.today())
