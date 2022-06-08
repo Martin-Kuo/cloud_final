@@ -175,7 +175,7 @@ def insert():
     same = cur.fetchone()
     if same != None: # 如果machine id重複，提醒
         flash("機器已存在!") 
-        return render_template('add.html', username = username, account = account)
+        return render_template('add.html', username = username, account = account, flag=flag)
     start_date = request.form.get('start_date')
     maintain_freq = request.form.get('maintain_freq')
     today = str(date.today())
