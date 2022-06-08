@@ -5,7 +5,11 @@ import pymysql
 import smtplib
 from email.message import EmailMessage
 
-today = date.today()
+# today = date.today()
+today = datetime.datetime.now()
+tomorrow = today+datetime.timedelta(days=1,hours=8)
+tomorrow = datetime.datetime.strftime(tomorrow, "%Y-%m-%d")
+today = datetime.datetime.strftime(today, "%Y-%m-%d")
 
 # 連上資料庫(Jason的)
 '''
@@ -31,7 +35,7 @@ cur=conn.cursor()
 
 # 找出隔天需要維護的機器(next_maintain_date)
 send_sql = "SELECT M.machine_id, Mem.email, M.next_maintain_date FROM Maintenance M, `Member` Mem WHERE M.next_maintain_date =(%s) AND M.member_id = Mem.account"
-cur.execute(send_sql, (today+datetime.timedelta(days=1)))
+cur.execute(send_sql, (tomorrow))
 conn.commit()
 rows = cur.fetchall()
 
