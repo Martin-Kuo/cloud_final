@@ -6,6 +6,12 @@ import os
 import smtplib
 from email.message import EmailMessage
 
+today = datetime.datetime.now()
+today = today+datetime.timedelta(hours=8)
+tomorrow = today+datetime.timedelta(days=1)
+tomorrow = datetime.datetime.strftime(tomorrow, "%Y-%m-%d")
+today = datetime.datetime.strftime(today, "%Y-%m-%d")
+
 # 本地測試資料庫
 '''
 conn = pymysql.connect(
@@ -177,8 +183,6 @@ def insert():
         return redirect(url_for('add'))
     start_date = request.form.get('start_date')
     maintain_freq = request.form.get('maintain_freq')
-    today = str(date.today())
-    # next_maintain_date = datetime.datetime.strptime(start_date, "%Y-%m-%d") + datetime.timedelta(days=int(maintain_freq))
     start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
     insert_sql = "INSERT INTO `Maintenance` (`machine_id`, `member_id`, `start_date`, `next_maintain_date`, `maintain_freq`) VALUES (%s, %s, %s, %s, %s)"
 

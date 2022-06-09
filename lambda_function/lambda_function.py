@@ -7,7 +7,8 @@ from email.message import EmailMessage
 
 # today = date.today()
 today = datetime.datetime.now()
-tomorrow = today+datetime.timedelta(days=1,hours=8)
+today = today+datetime.timedelta(hours=8)
+tomorrow = today+datetime.timedelta(days=1)
 tomorrow = datetime.datetime.strftime(tomorrow, "%Y-%m-%d")
 today = datetime.datetime.strftime(today, "%Y-%m-%d")
 
