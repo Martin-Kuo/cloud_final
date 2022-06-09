@@ -34,19 +34,6 @@ conn = pymysql.connect(
 
 cur=conn.cursor()
 
-# 找出隔天需要維護的機器(next_maintain_date)
-send_sql = "SELECT M.machine_id, Mem.email, M.next_maintain_date FROM Maintenance M, `Member` Mem WHERE M.next_maintain_date =(%s) AND M.member_id = Mem.account"
-cur.execute(send_sql, (tomorrow))
-conn.commit()
-rows = cur.fetchall()
-
-d = {}
-for r in rows:
-	d[r[0]] = [r[1],r[2]] # machine_id = [email, next_maintain_date]
-	
-k = list(d.keys())
-
-
 # 找出當日維修的機器
 check_sql = "SELECT machine_id FROM Maintenance WHERE next_maintain_date = (%s) "
 cur.execute(check_sql, (today))
@@ -62,6 +49,18 @@ if len(check_rows) > 0:
     "WHERE machine_id = machine_id AND next_maintain_date =(%s)"
     cur.execute(update_sql, (today))
     conn.commit()
+
+# 找出隔天需要維護的機器(next_maintain_date)
+send_sql = "SELECT M.machine_id, Mem.email, M.next_maintain_date FROM Maintenance M, `Member` Mem WHERE M.next_maintain_date =(%s) AND M.member_id = Mem.account"
+cur.execute(send_sql, (tomorrow))
+conn.commit()
+rows = cur.fetchall()
+
+d = {}
+for r in rows:
+	d[r[0]] = [r[1],r[2]] # machine_id = [email, next_maintain_date]
+	
+k = list(d.keys())
 
 def lambda_handler(event, context):
     
