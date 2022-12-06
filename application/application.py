@@ -53,7 +53,7 @@ data = {}
 @application.route('/')
 def start():
     return render_template('login.html')
-#test
+
 # 登入
 @application.route('/login', methods=['POST', 'GET'])
 def login():
